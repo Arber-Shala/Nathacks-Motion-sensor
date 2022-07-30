@@ -14,6 +14,7 @@ def main():
    w_surface = pygame.display.get_surface() 
    # create a game object
    game = Game(w_surface)
+
    # start the main game loop by calling the play method on the game object
    game.play() 
    # quit pygame and clean up the pygame window
@@ -36,6 +37,7 @@ class Game:
       
       self.FPS = 60
       self.game_Clock = pygame.time.Clock()
+      self.button_press = False
       self.close_clicked = False
       self.continue_game = True
       
@@ -50,6 +52,7 @@ class Game:
       while not self.close_clicked:  # until player clicks close box
          # play frame
          self.handle_events()
+
          self.draw()            
          if self.continue_game:
             #self.update()
@@ -71,31 +74,43 @@ class Game:
             
          if event.type == pygame.MOUSEBUTTONUP:
             self.handle_mouseup(event)
+            self.button_press = False 
             
          if event.type == pygame.MOUSEBUTTONDOWN:
             self.handle_mousedown(event)
-            
+            if (self.button_press == False):
+               self.button_press = True
+
+
          if event.type == pygame.MOUSEMOTION:  # allows us to move the dot
-            self.handle_mouse_motion(event)
+            if self.button_press == True:
+               self.handle_mouse_motion(event)
+            
    
+            
+         
    def handle_mouse_motion(self, event):
+      print('handle_mouse_motion')
       print(event)
       if event.buttons == (1, 0, 0):  # checks if only the left mouse button is clicked
          self.small_dot.set_center(event.pos)  # event.pos = position of the event
+         
             
    def handle_mousedown(self, event):
+      print('handle_mousedown')
       print(event)
       # collidepoint checks if click is inside the dot
       # stops the dot only when inside of the dot is clicked
       if event.button == 1 and self.small_dot.collidepoint(event.pos):  # checks if position of click is inside the dot
          self.small_dot.stop()
          print("press")
-         self.small_dot.shape(self)
+         # self.small_dot.shape(self)
                   
 
    def handle_mouseup(self, event):
       # Dot stops moving when the mouse is clicked and moves again when cloced again
       print(event)
+      print('handle_mouseup')
       if event.button == 3:
          if self.small_dot.collidepoint(event.pos):
             self.small_dot.stop()
@@ -203,15 +218,15 @@ class Dot:
       
       pygame.draw.circle(self.surface, self.color, self.center, self.radius)
       
-   def shape(self):
-      rect_right = False
-      rect_left = False
-      print("work")
-      if self.velocity[0] > 0 and self.velocity[1] > 0:
-         rect_right == True
+   # def shape(self):
+   #    rect_right = False
+   #    rect_left = False
+   #    print("work")
+   #    if self.velocity[0] > 0 and self.velocity[1] > 0:
+   #       rect_right == True
       
-      if rect_right == True:
-         pass
+   #    if rect_right == True:
+   #       pass
          
       
          
