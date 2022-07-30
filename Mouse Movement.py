@@ -40,6 +40,8 @@ class Game:
       self.button_press = False
       self.close_clicked = False
       self.continue_game = True
+      self.ref_list = []
+      self.clean_list = []
       
       # === game specific objects
       self.default_color = 'red'
@@ -75,8 +77,20 @@ class Game:
          if event.type == pygame.MOUSEBUTTONUP:
             self.handle_mouseup(event)
             self.button_press = False 
+            print(self.ref_list)
+            #clean the error bit at the beginning 
+            self.ref_list = self.ref_list[3:]
+            self.ref_list = [i for i in self.ref_list if i != (0,0)]
+            # self.ref_list.remove((0,0))
+            print(self.ref_list)
+            self.cleaning_list()
+            
+            # self.clean_list.remove((0, 0))
+            print(self.clean_list)
+           
             
          if event.type == pygame.MOUSEBUTTONDOWN:
+            self.ref_list = []
             self.handle_mousedown(event)
             if (self.button_press == False):
                self.button_press = True
@@ -85,13 +99,53 @@ class Game:
          if event.type == pygame.MOUSEMOTION:  # allows us to move the dot
             if self.button_press == True:
                self.handle_mouse_motion(event)
-            
-   
+
+
+   def cleaning_list(self):
+      
+      self.clean_list.append(self.ref_list[0])
+      i = 1
+      j = 0
+
+      while (i < len(self.ref_list)):
+
+
+
+         if (self.ref_list[i][0] * self.ref_list[i-1][0] > 0) and (self.ref_list[i][1]== 0 and  self.ref_list[i-1][1] == 0 ):
+            self.clean_list.append((self.clean_list[j][0] + self.ref_list[i][0] , 0))
+            del self.clean_list[j]
+         
+         
+         elif (self.ref_list[i][1] * self.ref_list[i-1][1] > 0) and (self.ref_list[i][0]== 0 and  self.ref_list[i-1][0] == 0):
+         
+            self.clean_list.append((0, self.clean_list[j][1] + self.ref_list[i][1]) )
+            del self.clean_list[j]
+
+         elif (self.ref_list[i][0] * self.ref_list[i-1][0] > 0) and (self.ref_list[i][1] * self.ref_list[i-1][1] > 0) :
+            if (self.ref_list[i][0] / self.ref_list[i][1] == self.ref_list[i-1][0] / self.ref_list[i-1][1]):
+               self.clean_list.append((self.clean_list[j][0] + self.ref_list[i][0] , self.clean_list[j][1] + self.ref_list[i][1]) )
+               del self.clean_list[j]
+
+            else:
+               self.clean_list.append( self.ref_list[i])
+               j= j+1 
+               print('angles not equal  ')
+
+         else:
+          self.clean_list.append( self.ref_list[i])
+          j= j+1 
+         i= i +1
             
          
    def handle_mouse_motion(self, event):
       print('handle_mouse_motion')
       print(event)
+      pos = pygame.mouse.get_pos()
+      print(pos)
+      
+      self.ref_list.append(pygame.mouse.get_rel())
+
+      # print(self.ref_list)
       if event.buttons == (1, 0, 0):  # checks if only the left mouse button is clicked
          self.small_dot.set_center(event.pos)  # event.pos = position of the event
          
@@ -99,6 +153,8 @@ class Game:
    def handle_mousedown(self, event):
       print('handle_mousedown')
       print(event)
+      pos = pygame.mouse.get_pos()
+      print(pos)
       # collidepoint checks if click is inside the dot
       # stops the dot only when inside of the dot is clicked
       if event.button == 1 and self.small_dot.collidepoint(event.pos):  # checks if position of click is inside the dot
