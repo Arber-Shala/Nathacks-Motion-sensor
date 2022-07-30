@@ -218,15 +218,6 @@ class Dot:
       
       pygame.draw.circle(self.surface, self.color, self.center, self.radius)
       
-   # def shape(self):
-   #    rect_right = False
-   #    rect_left = False
-   #    print("work")
-   #    if self.velocity[0] > 0 and self.velocity[1] > 0:
-   #       rect_right == True
-      
-   #    if rect_right == True:
-   #       pass
          
       
          
