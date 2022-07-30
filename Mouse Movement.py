@@ -84,9 +84,13 @@ class Game:
             # self.ref_list.remove((0,0))
             print(self.ref_list)
             self.cleaning_list()
-            
-            # self.clean_list.remove((0, 0))
             print(self.clean_list)
+
+
+            ###############To do !!!!!!!!!!
+
+            # self.is_triamgle()
+
            
             
          if event.type == pygame.MOUSEBUTTONDOWN:
@@ -99,6 +103,10 @@ class Game:
          if event.type == pygame.MOUSEMOTION:  # allows us to move the dot
             if self.button_press == True:
                self.handle_mouse_motion(event)
+
+   
+   #def is_triagle():
+   ####
 
 
    def cleaning_list(self):
