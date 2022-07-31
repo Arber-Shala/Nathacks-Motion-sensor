@@ -93,6 +93,8 @@ class Game:
             print('clean ')
             print(self.clean_list)
 
+
+
             self.clean_list = self.approx_data(self.clean_list, 5)
             print('after approx')
             print(self.clean_list)
@@ -101,11 +103,17 @@ class Game:
             self.cleaning_list(self.clean_list)
             print(self.clean_list)
 
+
+            
+
             self.clean_list = self.approx_angle_data(self.clean_list, 5)
             print('after angle apprx')
             print(self.clean_list)
             self.clean_list = self.approx_angle_data(self.clean_list, 5)
             print('after angle apprx')
+            print(self.clean_list)
+
+            self.clean_list = [i for i in self.clean_list if abs(i[0])>20 or abs(i[1])>20]
             print(self.clean_list)
             
 
@@ -186,7 +194,7 @@ class Game:
 
                #((count ==len(list)-2) and (len(list)== 0))
             print(count)
-            print(f'list is: {list_small_angles}') 
+            
             if ((abs(angle1-angle) > 25) or (count ==len(list)-1) ): 
                list_small_angles.append(list[count])
                 
