@@ -104,6 +104,9 @@ class Game:
             self.clean_list = self.approx_angle_data(self.clean_list, 5)
             print('after angle apprx')
             print(self.clean_list)
+            self.clean_list = self.approx_angle_data(self.clean_list, 5)
+            print('after angle apprx')
+            print(self.clean_list)
             
 
 
@@ -160,6 +163,7 @@ class Game:
       self.angle_change =0
       result = []
       count =0
+      list_small_angles =[]
 
       while (count < len(list)):
          
@@ -169,7 +173,7 @@ class Game:
 
          else: 
 
-            list_small_angles =[]
+            
            
             angle = pygame.math.Vector2.angle_to(pygame.Vector2(1,0),list[count-1] )
             angle1 = pygame.math.Vector2.angle_to(pygame.Vector2(1,0),list[count])
@@ -181,13 +185,17 @@ class Game:
             print(f' angle diff is {abs(angle1-angle)}')
 
                #((count ==len(list)-2) and (len(list)== 0))
-            if ((abs(angle1-angle) > 25)): 
+            print(count)
+            print(f'list is: {list_small_angles}') 
+            if ((abs(angle1-angle) > 25) or (count ==len(list)-1) ): 
                list_small_angles.append(list[count])
+                
                tuple_sum =(0,0)
 
                for i in list_small_angles:
                   print(f'i is {i}')
                   tuple_sum = (tuple_sum[0]+i[0], tuple_sum[1]+ i[1])
+               print(f'tuple_sum is: {tuple_sum}')  
 
                result.append(tuple_sum)
 
@@ -201,6 +209,7 @@ class Game:
 
 
             else:
+               list[count]
                list_small_angles.append(list[count])
                print("here i am")
             
