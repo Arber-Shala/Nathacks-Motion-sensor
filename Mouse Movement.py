@@ -1,5 +1,6 @@
 
-import pygame, math
+import pygame
+import math
 
 # User-defined functions
 
@@ -32,7 +33,7 @@ class Game:
       # - surface is the display window surface object
 
       # === objects that are part of every game that we will discuss
-      self.approx = 15
+      
       self.surface = surface
       self.bg_color = pygame.Color('black')
       
@@ -41,8 +42,9 @@ class Game:
       self.button_press = False
       self.close_clicked = False
       self.continue_game = True
-      self.ref_list = []
+      self.rel_list = []
       self.clean_list = []
+      self.angle_change = 0
       
       # === game specific objects
       self.default_color = 'red'
@@ -78,23 +80,29 @@ class Game:
          if event.type == pygame.MOUSEBUTTONUP:
             self.handle_mouseup(event)
             self.button_press = False 
-            print(self.ref_list)
+            if (len(self.rel_list) <10 ): 
+               break
+            print(self.rel_list)
             #clean the error bit at the beginning 
-            self.ref_list = self.ref_list[3:]
-            self.ref_list = [i for i in self.ref_list if i != (0,0)]
-            # self.ref_list.remove((0,0))
+            self.rel_list = self.rel_list[3:]
+            self.rel_list = [i for i in self.rel_list if i != (0,0)]
+            # self.rel_list.remove((0,0))
             print('ref list')
-            print(self.ref_list)
-            self.cleaning_list(self.ref_list)
+            print(self.rel_list)
+            self.cleaning_list(self.rel_list)
             print('clean ')
             print(self.clean_list)
 
-            self.clean_list = self.approx_data(self.clean_list)
+            self.clean_list = self.approx_data(self.clean_list, 5)
             print('after approx')
             print(self.clean_list)
             print('after 2 clean')
             self.clean_list = [i for i in self.clean_list if i != (0,0)]
             self.cleaning_list(self.clean_list)
+            print(self.clean_list)
+
+            self.clean_list = self.approx_angle_data(self.clean_list, 5)
+            print('after angle apprx')
             print(self.clean_list)
             
 
@@ -107,7 +115,7 @@ class Game:
            
             
          if event.type == pygame.MOUSEBUTTONDOWN:
-            self.ref_list = []
+            self.rel_list = []
             self.handle_mousedown(event)
             if (self.button_press == False):
                self.button_press = True
@@ -118,31 +126,88 @@ class Game:
                self.handle_mouse_motion(event)
 
    
-   #def is_triagle():
+   # def is_triagle():
+
    ####
 
-   def approx_data(self, list ):
+   def approx_data(self, list, approx):
+      self.angle_change =0
       result = []
       count = 0
 
-      while (count<len(list)):
-       for i in list:
-            if (abs(i[0]) <self.approx):
-               
-               if (abs(i[1]) <self.approx):
+      while (count <(len(list))):
+         for vector_i in list :
+            if (abs(vector_i[0]) <approx):
+               if (abs(vector_i[1]) <approx):
                   result.append((0, 0))
                else:   
-                  result.append((0,i[1]))
-            elif (abs(i[1]) <self.approx):
-               result.append((i[0], 0))
+                  result.append((0,vector_i[1]))
+            elif (abs(vector_i[1]) <approx):
+               result.append((vector_i[0], 0))
             
             else:
-                result.append(i)
+                result.append(vector_i)
             count = count+1
+
+      print('result')
+      print(result)
+      count = 0 
 
       return result
 
+   def approx_angle_data(self, list, approx):
 
+      self.angle_change =0
+      result = []
+      count =0
+
+      while (count < len(list)):
+         
+         if len(list) ==1:
+            result = [list[0]]
+            break 
+
+         else: 
+
+            list_small_angles =[]
+           
+            angle = pygame.math.Vector2.angle_to(pygame.Vector2(1,0),list[count-1] )
+            angle1 = pygame.math.Vector2.angle_to(pygame.Vector2(1,0),list[count])
+            print(f'first Vect is: {list[count-1] }')
+            print(f'angle is: {angle}')
+            print(f'sec Vect is: {list[count] }')
+            print(f'sec angle is: {angle1}')
+
+            print(f' angle diff is {abs(angle1-angle)}')
+
+               #((count ==len(list)-2) and (len(list)== 0))
+            if ((abs(angle1-angle) > 25)): 
+               list_small_angles.append(list[count])
+               tuple_sum =(0,0)
+
+               for i in list_small_angles:
+                  print(f'i is {i}')
+                  tuple_sum = (tuple_sum[0]+i[0], tuple_sum[1]+ i[1])
+
+               result.append(tuple_sum)
+
+               # if ((count ==len(list)-2) and (len(list)== 0))
+               #    print('last one')
+                  
+            
+
+               list_small_angles =[]
+               print("perdect ")
+
+
+            else:
+               list_small_angles.append(list[count])
+               print("here i am")
+            
+
+
+            count = count +1 
+      return result
 
    def cleaning_list(self, mylist):
       self.clean_list =[]
@@ -186,9 +251,9 @@ class Game:
       pos = pygame.mouse.get_pos()
       print(pos)
       
-      self.ref_list.append(pygame.mouse.get_rel())
+      self.rel_list.append(pygame.mouse.get_rel())
 
-      # print(self.ref_list)
+      # print(self.rel_list)
       if event.buttons == (1, 0, 0):  # checks if only the left mouse button is clicked
          self.small_dot.set_center(event.pos)  # event.pos = position of the event
          
