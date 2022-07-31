@@ -32,6 +32,7 @@ class Game:
       # - surface is the display window surface object
 
       # === objects that are part of every game that we will discuss
+      self.approx = 15
       self.surface = surface
       self.bg_color = pygame.Color('black')
       
@@ -82,9 +83,21 @@ class Game:
             self.ref_list = self.ref_list[3:]
             self.ref_list = [i for i in self.ref_list if i != (0,0)]
             # self.ref_list.remove((0,0))
+            print('ref list')
             print(self.ref_list)
-            self.cleaning_list()
+            self.cleaning_list(self.ref_list)
+            print('clean ')
             print(self.clean_list)
+
+            self.clean_list = self.approx_data(self.clean_list)
+            print('after approx')
+            print(self.clean_list)
+            print('after 2 clean')
+            self.clean_list = [i for i in self.clean_list if i != (0,0)]
+            self.cleaning_list(self.clean_list)
+            print(self.clean_list)
+            
+
 
 
             ###############To do !!!!!!!!!!
@@ -108,39 +121,61 @@ class Game:
    #def is_triagle():
    ####
 
+   def approx_data(self, list ):
+      result = []
+      count = 0
 
-   def cleaning_list(self):
-      
-      self.clean_list.append(self.ref_list[0])
+      while (count<len(list)):
+       for i in list:
+            if (abs(i[0]) <self.approx):
+               
+               if (abs(i[1]) <self.approx):
+                  result.append((0, 0))
+               else:   
+                  result.append((0,i[1]))
+            elif (abs(i[1]) <self.approx):
+               result.append((i[0], 0))
+            
+            else:
+                result.append(i)
+            count = count+1
+
+      return result
+
+
+
+   def cleaning_list(self, mylist):
+      self.clean_list =[]
+      self.clean_list.append(mylist[0])
       i = 1
       j = 0
 
-      while (i < len(self.ref_list)):
+      while (i < len(mylist)):
 
 
 
-         if (self.ref_list[i][0] * self.ref_list[i-1][0] > 0) and (self.ref_list[i][1]== 0 and  self.ref_list[i-1][1] == 0 ):
-            self.clean_list.append((self.clean_list[j][0] + self.ref_list[i][0] , 0))
+         if (mylist[i][0] * mylist[i-1][0] > 0) and (mylist[i][1]== 0 and mylist[i-1][1] == 0 ):
+            self.clean_list.append((self.clean_list[j][0] + mylist[i][0] , 0))
             del self.clean_list[j]
          
          
-         elif (self.ref_list[i][1] * self.ref_list[i-1][1] > 0) and (self.ref_list[i][0]== 0 and  self.ref_list[i-1][0] == 0):
+         elif (mylist[i][1] * mylist[i-1][1] > 0) and (mylist[i][0]== 0 and  mylist[i-1][0] == 0):
          
-            self.clean_list.append((0, self.clean_list[j][1] + self.ref_list[i][1]) )
+            self.clean_list.append((0, self.clean_list[j][1] + mylist[i][1]) )
             del self.clean_list[j]
 
-         elif (self.ref_list[i][0] * self.ref_list[i-1][0] > 0) and (self.ref_list[i][1] * self.ref_list[i-1][1] > 0) :
-            if (self.ref_list[i][0] / self.ref_list[i][1] == self.ref_list[i-1][0] / self.ref_list[i-1][1]):
-               self.clean_list.append((self.clean_list[j][0] + self.ref_list[i][0] , self.clean_list[j][1] + self.ref_list[i][1]) )
+         elif (mylist[i][0] * mylist[i-1][0] > 0) and (mylist[i][1] * mylist[i-1][1] > 0) :
+            if (mylist[i][0] / mylist[i][1] == mylist[i-1][0] / mylist[i-1][1]):
+               self.clean_list.append((self.clean_list[j][0] + mylist[i][0] , self.clean_list[j][1] + mylist[i][1]) )
                del self.clean_list[j]
 
             else:
-               self.clean_list.append( self.ref_list[i])
+               self.clean_list.append( mylist[i])
                j= j+1 
                print('angles not equal  ')
 
          else:
-          self.clean_list.append( self.ref_list[i])
+          self.clean_list.append( mylist[i])
           j= j+1 
          i= i +1
             
@@ -193,15 +228,7 @@ class Game:
          self.small_dot.shape(self)
          
          
-      #if event.key == pygame.K_r:
-         #self.small_dot.set_color('red')
-      #if event.key == pygame.K_g:
-         #self.small_dot.set_color('green')
-      #if event.key == pygame.K_b:
-         #self.small_dot.set_color('blue')
-      #if event.key == pygame.K_SPACE:
-         #self.small_dot.set_color(self.default_color)
-
+    
    def draw(self):
       # Draw all game objects.
       # - self is the Game to draw
@@ -220,8 +247,7 @@ class Game:
       # Check and remember if the game should continue
       # - self is the Game to check
       pass
-      
-
+   
 
 class Dot:
    # An object in this class represents a Dot that moves 
