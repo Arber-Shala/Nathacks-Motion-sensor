@@ -87,64 +87,64 @@ class Game:
             self.closed_shape = None
             if (len(self.rel_list) <10 ): 
                break
-            print(self.rel_list)
+            # print(self.rel_list)
             #clean the error bit at the beginning 
             self.rel_list = self.rel_list[3:]
             self.rel_list = [i for i in self.rel_list if i != (0,0)]
             # self.rel_list.remove((0,0))
-            print('ref list')
-            print(self.rel_list)
+            # print('ref list')
+            # print(self.rel_list)
             self.cleaning_list(self.rel_list)
-            print('clean ')
-            print(self.clean_list)
+            # print('clean ')
+            # print(self.clean_list)
 
 
 
             self.clean_list = self.approx_data(self.clean_list, 4)
-            print('after approx')
-            print(self.clean_list)
-            print('after 2 clean')
+            # print('after approx')
+            # print(self.clean_list)
+            # print('after 2 clean')
             self.clean_list = [i for i in self.clean_list if i != (0,0)]
             self.cleaning_list(self.clean_list)
-            print(self.clean_list)
+            # print(self.clean_list)
 
 
             
 
             self.clean_list = self.approx_angle_data(self.clean_list, 25)
-            print('after 1 angle apprx')
-            print(self.clean_list)
+            # print('after 1 angle apprx')
+            # print(self.clean_list)
             
             self.clean_list = [i for i in self.clean_list if abs(i[0])>20 or abs(i[1])>20]
-            print('clean 1 angle apprx')
+            # print('clean 1 angle apprx')
 
-            print(self.clean_list)
-            print(f'angle change after 1  is {self.angle_change}')
+            # print(self.clean_list)
+            # print(f'angle change after 1  is {self.angle_change}')
 
             self.clean_list = self.approx_angle_data(self.clean_list, 25)
-            print('after 2 angle apprx')
-            print(self.clean_list)
+            # print('after 2 angle apprx')
+            # print(self.clean_list)
 
-            print('after 3 angle apprx')
-            print(f'angle change after 2  is {self.angle_change}')
+            # print('after 3 angle apprx')
+            # print(f'angle change after 2  is {self.angle_change}')
             self.clean_list = self.approx_angle_data(self.clean_list, 25)
             
 
             print('results:')
-            print(self.clean_list)
+            # print(self.clean_list)
 
            
 
             self.clean_list = [i for i in self.clean_list if abs(i[0])>20 or abs(i[1])>20]
-            print(self.clean_list)
-            print(f'angle change after 3  is {self.angle_change}')
+            # print(self.clean_list)
+            # print(f'angle change after 3  is {self.angle_change}')
             
             self.check_closed_shape(self.clean_list,50)
-            print(f'shape is close: {self.closed_shape}')
+            # print(f'shape is close: {self.closed_shape}')
             if self.closed_shape == True:
                self.update_if_closed(25)
             
-            print(f'angle change final is {self.angle_change}')
+            # print(f'angle change final is {self.angle_change}')
             
             self.check_shape(self.clean_list)
             
@@ -169,11 +169,12 @@ class Game:
                self.handle_mouse_motion(event)
 
    def check_shape(self, mylist):
-      #is it a line
+      # 1 line : is it a line
       if len(mylist) == 1 :
          self.shape ='Line'
          print(f'we got one: {self.shape}')
       
+      # 2 line : is it a angle 
       elif len(mylist) ==2 :
          if  self.angle_change == 1 and self.closed_shape == False:
             self.shape ='Angle'
@@ -182,19 +183,60 @@ class Game:
          else: 
             self.shape ='Return Line'
             print(f'we got one: {self.shape}')
-
+      # 3 line : is it a triangle 
       elif len(mylist) == 3:
-         if  self.angle_change == 1 and self.closed_shape == False:
-            self.shape ='Angle'
+         if  self.angle_change == 3 and self.closed_shape == True:
+            self.shape ='TRIangle'
             print(f'we got one: {self.shape}')
                   
          else: 
-            self.shape ='Return Line'
+            self.shape ='3 line Non-Triangle'
+            print(f'we got one: {self.shape}')
+      
+      # 4 line : is it a 
+      elif len(mylist) == 4:
+         angle1 = pygame.math.Vector2.angle_to(pygame.Vector2(1,0),mylist[0] )
+         angle2 = pygame.math.Vector2.angle_to(pygame.Vector2(1,0),mylist[1] )
+         angle3 = pygame.math.Vector2.angle_to(pygame.Vector2(1,0),mylist[2] )
+         angle4 = pygame.math.Vector2.angle_to(pygame.Vector2(1,0),mylist[3] )
+        
+         # print( abs(angle2-angle1) )
+         # print (abs(angle3-angle2))
+         # print (abs(angle4-angle3) )
+         # print (abs(angle1-angle4))
+         diffi_1= round((int(abs(angle2-angle1)/10)*10))
+         diffi_2= round((int(abs(angle3-angle2)/10)*10))
+         diffi_3= round((int(abs(angle4-angle3)/10)*10))
+         diffi_4= round((int(abs(angle1-angle4)/10)*10))
+         # print (diffi_1)
+         # print (diffi_2)
+         # print (diffi_3)
+         # print (diffi_4)
+         #  if abs(math.sin(abs(angle2-angle1))) == 1 and abs(math.sin(abs(angle3-angle2)))==1:
+         if  self.angle_change == 4 and self.closed_shape == True:
+            if (diffi_1 == 90 or diffi_1 == 270 ) and (diffi_2 == 90 or diffi_2 == 270 ):
+               if (round(abs(mylist[0][0])/10)*10 == round(abs(mylist[1][0])/10)*10) and (round(abs(mylist[0][1])/10)*10 == round(abs(mylist[1][1])/10)*10):
+                  self.shape ='Square'
+                  print(f'we got one: {self.shape}')
+               else:
+                  self.shape ='Rectangle'
+                  print(f'we got one: {self.shape}')
+            
+            elif( abs(math.sin(diffi_1)) == abs(math.sin(diffi_3)) ) and  (abs(math.sin(diffi_2)) == abs(math.sin(diffi_4))): 
+               self.shape ='Parallelogram'
+               print(f'we got one: {self.shape}')
+            else:
+               self.shape ='Quadrilaterals'
+               print(f'we got one: {self.shape}')
+                  
+         else: 
+            self.shape ='4 line non close shape '
             print(f'we got one: {self.shape}')
 
 
       else: 
          self.shape ='U F O!! PWEEE PWEE PWEEE!!!'
+         print(f'we got one: {self.shape}')
 
    
    def update_if_closed(self, approx):
@@ -244,8 +286,8 @@ class Game:
                 result.append(vector_i)
             count = count+1
 
-      print('result')
-      print(result)
+      # print('result')
+      # print(result)
       count = 0 
 
       return result
@@ -257,7 +299,7 @@ class Game:
       count =1
       list_small_angles =[]
       if len(list) < 2:
-            print('list is one')
+            # print('list is one')
             result = list
       else: 
 
@@ -275,15 +317,15 @@ class Game:
             #    #((count ==len(list)-2) and (len(list)== 0))
             # print(count)
             if (abs(angle1-angle) > 25) and len(list) == 2:
-               print("     PPPPlus 1: start")
+               # print("     PPPPlus 1: start")
                self.angle_change =  self.angle_change +1  
                result = list
             
             #reach the end of the string 
             elif (count == len(list)-1): 
-                  print("last reached ")
+                  # print("last reached ")
                   if (abs(angle1-angle) > 25):
-                     print("     PPPPlus 1: end")
+                     # print("     PPPPlus 1: end")
                      self.angle_change =  self.angle_change +1  
 
                      list_small_angles.append(list[count-1])
@@ -319,7 +361,7 @@ class Game:
             else: 
 
              if ((abs(angle1-angle) > 25)  ): 
-                  print("     PPPPlus 1: mid")
+                  # print("     PPPPlus 1: mid")
          
                   self.angle_change =  self.angle_change +1
                   list_small_angles.append(list[count-1])
@@ -338,12 +380,12 @@ class Game:
                # if ((count ==len(list)-2) and (len(list)== 0))
                #    print('last one'
                   list_small_angles =[]
-                  print("perdect ")
+                  # print("perdect ")
              else:
 
                   list_small_angles.append(list[count-1])
                # print(f'list_small_angles add in: {list_small_angles}') 
-                  print("here i am")
+                  # print("here i am")
 
                
             count = count +1 
@@ -377,7 +419,7 @@ class Game:
             else:
                self.clean_list.append( mylist[i])
                j= j+1 
-               print('angles not equal  ')
+               # print('angles not equal  ')
 
          else:
           self.clean_list.append( mylist[i])
@@ -387,9 +429,9 @@ class Game:
          
    def handle_mouse_motion(self, event):
       print('handle_mouse_motion')
-      print(event)
+      # print(event)
       pos = pygame.mouse.get_pos()
-      print(pos)
+      # print(pos)
       
       self.rel_list.append(pygame.mouse.get_rel())
 
