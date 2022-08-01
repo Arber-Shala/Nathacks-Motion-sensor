@@ -189,12 +189,15 @@ class Game:
       if len(mylist) == 1 :
          self.shape ='Line'
          print(f'we got one: {self.shape}')
+         line  = pygame.mixer.Sound('line.wav')
+         line.play()
       
       # 2 line : is it a angle 
       elif len(mylist) ==2 :
          if  self.angle_change == 1 and self.closed_shape == False:
             self.shape ='Angle'
             print(f'we got one: {self.shape}')
+            pygame.mixer.Sound('angle.wav').play()
                   
          else: 
             self.shape ='Return Line'
@@ -204,10 +207,12 @@ class Game:
          if  self.angle_change == 3 and self.closed_shape == True:
             self.shape ='TRIangle'
             print(f'we got one: {self.shape}')
+            pygame.mixer.Sound('Triangle.wav').play()
                   
          else: 
             self.shape ='3 line Non-Triangle'
             print(f'we got one: {self.shape}')
+            pygame.mixer.Sound('threeconnectline.wav').play()
       
       # 4 line : is it a 
       elif len(mylist) == 4:
@@ -234,20 +239,25 @@ class Game:
                if (round(abs(mylist[0][0])/10)*10 == round(abs(mylist[1][0])/10)*10) and (round(abs(mylist[0][1])/10)*10 == round(abs(mylist[1][1])/10)*10):
                   self.shape ='Square'
                   print(f'we got one: {self.shape}')
+                  pygame.mixer.Sound('square.wav').play()
                else:
                   self.shape ='Rectangle'
                   print(f'we got one: {self.shape}')
+                  pygame.mixer.Sound('rectangle.wav').play()
             
             elif( abs(math.sin(diffi_1)) == abs(math.sin(diffi_3)) ) and  (abs(math.sin(diffi_2)) == abs(math.sin(diffi_4))): 
                self.shape ='Parallelogram'
                print(f'we got one: {self.shape}')
+               pygame.mixer.Sound('paral.wav').play()
             else:
                self.shape ='Quadrilaterals'
                print(f'we got one: {self.shape}')
+               pygame.mixer.Sound('quard.wav').play()
                   
          else: 
             self.shape ='4 line non close shape '
             print(f'we got one: {self.shape}')
+            pygame.mixer.Sound('fourconnect.wav').play()
 
 
       else: 
@@ -474,6 +484,7 @@ class Game:
       # Dot stops moving when the mouse is clicked and moves again when cloced again
       print(event)
       print('handle_mouseup')
+      # pygame.mixer.Sound('drawshape.wav').play()
       
       if event.button == 3:
          if self.small_dot.collidepoint(event.pos):
