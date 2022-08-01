@@ -49,6 +49,8 @@ class Game:
       self.angle_change = 0
       self.closed_shape = None
       self.shape=None
+      self.draw_list = []
+      self.detect_list =[]
       
       # === game specific objects
       self.default_color = 'red'
@@ -65,7 +67,7 @@ class Game:
          self.draw()            
          if self.continue_game:
             #self.update()
-            self.draw_shape(self.clean_list)
+            # self.draw_shape(self.draw_list)
             self.decide_continue()
          self.game_Clock.tick(self.FPS) # run at most with FPS Frames Per Second 
 
@@ -140,18 +142,32 @@ class Game:
            
 
             self.clean_list = [i for i in self.clean_list if abs(i[0])>20 or abs(i[1])>20]
-            # print(self.clean_list)
+            print(self.clean_list)
             # print(f'angle change after 3  is {self.angle_change}')
+
+            self.draw_list = self.clean_list
+            self.detect_list = self.clean_list.copy()
+            print(f'drawlist is: {self.draw_list}')
+
+            self.check_closed_shape(self.detect_list,40)
+            print(f'detect_list is: {self.detect_list}')
+            print(f'clean_list is: {self.clean_list}')
             
-            self.check_closed_shape(self.clean_list,50)
+           
+
             print(f'shape is close: {self.closed_shape}')
             if self.closed_shape == True:
                self.update_if_closed(25)
             
+            print(f'detect_list is: {self.detect_list}')
+            print(f'clean_list is: {self.clean_list}')
+            
             print(f'angle change final is {self.angle_change}')
             
-            self.check_shape(self.clean_list)
+            self.check_shape(self.detect_list)
+            
 
+            print(f'clean_list is: {self.clean_list}')
 
 
             #draw the shape
@@ -202,6 +218,8 @@ class Game:
          else: 
             self.shape ='Return Line'
             print(f'we got one: {self.shape}')
+            pygame.mixer.Sound('lines.wav').play()
+
       # 3 line : is it a triangle 
       elif len(mylist) == 3:
          if  self.angle_change == 3 and self.closed_shape == True:
@@ -259,22 +277,60 @@ class Game:
             print(f'we got one: {self.shape}')
             pygame.mixer.Sound('fourconnect.wav').play()
 
+      elif len(mylist) > 4 and len(mylist)< 10 :
+         if self.closed_shape == True:
+            if len(mylist) == 5:
+               pygame.mixer.Sound('five.wav').play()
+            if len(mylist) == 6:
+               pygame.mixer.Sound('six.wav').play()
+            if len(mylist) == 7:
+               pygame.mixer.Sound('seven.wav').play()
+            if len(mylist) == 8:
+               pygame.mixer.Sound('eight.wav').play()
+            if len(mylist) == 9:
+               pygame.mixer.Sound('nine.wav').play()
 
+
+            self.shape ='line close shape'
+
+
+            print(f'we got one: {len(mylist)} {self.shape}')
+            pygame.mixer.Sound('line_close_shape.wav').play()
+                  
+         else: 
+            if len(mylist) == 5:
+               pygame.mixer.Sound('five.wav').play()
+            if len(mylist) == 6:
+               pygame.mixer.Sound('six.wav').play()
+            if len(mylist) == 7:
+               pygame.mixer.Sound('seven.wav').play()
+            if len(mylist) == 8:
+               pygame.mixer.Sound('eight.wav').play()
+            if len(mylist) == 9:
+               pygame.mixer.Sound('nine.wav').play()
+
+
+            self.shape ='connect lines'
+
+
+            print(f'we got one: {len(mylist)} {self.shape}')
+            pygame.mixer.Sound('connect_lines.wav').play()
       else: 
          self.shape ='U F O!! PWEEE PWEE PWEEE!!!'
          print(f'we got one: {self.shape}')
+         pygame.mixer.Sound('ufo.wav').play()
 
    
    def update_if_closed(self, approx):
-         angle = pygame.math.Vector2.angle_to(pygame.Vector2(1,0),self.clean_list[0] )
-         angle1 = pygame.math.Vector2.angle_to(pygame.Vector2(1,0),self.clean_list[len(self.clean_list)-1])
+         angle = pygame.math.Vector2.angle_to(pygame.Vector2(1,0),self.detect_list[0] )
+         angle1 = pygame.math.Vector2.angle_to(pygame.Vector2(1,0),self.detect_list[len(self.detect_list)-1])
          if abs(angle1-angle) > approx:
        
             self.angle_change =  self.angle_change +1  
 
          else:
-            self.clean_list[len(self.clean_list)-1] = (self.clean_list[len(self.clean_list)-1][0] + self.clean_list[0][0],self.clean_list[len(self.clean_list)-1][1] + self.clean_list[0][1] )
-            del self.clean_list[0]
+            self.detect_list[len(self.detect_list)-1] = (self.detect_list[len(self.detect_list)-1][0] + self.detect_list[0][0],self.detect_list[len(self.detect_list)-1][1] + self.detect_list[0][1] )
+            del self.detect_list[0]
       
 
 
@@ -512,7 +568,8 @@ class Game:
       self.surface.fill(self.bg_color) # clear the display surface first
       self.small_dot.draw()
       if  self.button_press ==False:
-         self.draw_shape(self.clean_list)
+         # print(self.draw_list)
+         self.draw_shape(self.draw_list)
       pygame.display.update() # make the updated surface appear on the display
 
 
