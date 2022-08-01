@@ -45,6 +45,8 @@ class Game:
       self.rel_list = []
       self.clean_list = []
       self.angle_change = 0
+      self.closed_shape = None
+      self.shape=None
       
       # === game specific objects
       self.default_color = 'red'
@@ -78,8 +80,11 @@ class Game:
             self.handle_keyup(event)
             
          if event.type == pygame.MOUSEBUTTONUP:
+            
+            
             self.handle_mouseup(event)
             self.button_press = False 
+            self.closed_shape = None
             if (len(self.rel_list) <10 ): 
                break
             print(self.rel_list)
@@ -95,7 +100,7 @@ class Game:
 
 
 
-            self.clean_list = self.approx_data(self.clean_list, 5)
+            self.clean_list = self.approx_data(self.clean_list, 4)
             print('after approx')
             print(self.clean_list)
             print('after 2 clean')
@@ -106,15 +111,42 @@ class Game:
 
             
 
-            self.clean_list = self.approx_angle_data(self.clean_list, 5)
-            print('after angle apprx')
+            self.clean_list = self.approx_angle_data(self.clean_list, 25)
+            print('after 1 angle apprx')
             print(self.clean_list)
-            self.clean_list = self.approx_angle_data(self.clean_list, 5)
-            print('after angle apprx')
+            
+            self.clean_list = [i for i in self.clean_list if abs(i[0])>20 or abs(i[1])>20]
+            print('clean 1 angle apprx')
+
             print(self.clean_list)
+            print(f'angle change after 1  is {self.angle_change}')
+
+            self.clean_list = self.approx_angle_data(self.clean_list, 25)
+            print('after 2 angle apprx')
+            print(self.clean_list)
+
+            print('after 3 angle apprx')
+            print(f'angle change after 2  is {self.angle_change}')
+            self.clean_list = self.approx_angle_data(self.clean_list, 25)
+            
+
+            print('results:')
+            print(self.clean_list)
+
+           
 
             self.clean_list = [i for i in self.clean_list if abs(i[0])>20 or abs(i[1])>20]
             print(self.clean_list)
+            print(f'angle change after 3  is {self.angle_change}')
+            
+            self.check_closed_shape(self.clean_list,50)
+            print(f'shape is close: {self.closed_shape}')
+            if self.closed_shape == True:
+               self.update_if_closed(25)
+            
+            print(f'angle change final is {self.angle_change}')
+            
+            self.check_shape(self.clean_list)
             
 
 
@@ -136,13 +168,65 @@ class Game:
             if self.button_press == True:
                self.handle_mouse_motion(event)
 
-   
-   # def is_triagle():
+   def check_shape(self, mylist):
+      #is it a line
+      if len(mylist) == 1 :
+         self.shape ='Line'
+         print(f'we got one: {self.shape}')
+      
+      elif len(mylist) ==2 :
+         if  self.angle_change == 1 and self.closed_shape == False:
+            self.shape ='Angle'
+            print(f'we got one: {self.shape}')
+                  
+         else: 
+            self.shape ='Return Line'
+            print(f'we got one: {self.shape}')
 
-   ####
+      elif len(mylist) == 3:
+         if  self.angle_change == 1 and self.closed_shape == False:
+            self.shape ='Angle'
+            print(f'we got one: {self.shape}')
+                  
+         else: 
+            self.shape ='Return Line'
+            print(f'we got one: {self.shape}')
+
+
+      else: 
+         self.shape ='U F O!! PWEEE PWEE PWEEE!!!'
+
+   
+   def update_if_closed(self, approx):
+         angle = pygame.math.Vector2.angle_to(pygame.Vector2(1,0),self.clean_list[0] )
+         angle1 = pygame.math.Vector2.angle_to(pygame.Vector2(1,0),self.clean_list[len(self.clean_list)-1])
+         if abs(angle1-angle) > approx:
+       
+            self.angle_change =  self.angle_change +1  
+
+         else:
+            self.clean_list[len(self.clean_list)-1] = (self.clean_list[len(self.clean_list)-1][0] + self.clean_list[0][0],self.clean_list[len(self.clean_list)-1][1] + self.clean_list[0][1] )
+            del self.clean_list[0]
+      
+
+
+   # def define_shape():
+   def check_closed_shape(self, mylist,approx):
+      sum_vectors = (0,0)
+      for i in mylist:
+         sum_vectors = (sum_vectors[0]+i[0], sum_vectors[1]+i[1])
+      
+      if (abs(sum_vectors[0]) < approx and abs(sum_vectors[1]) < approx):
+
+         self.closed_shape = True
+
+      else: 
+         self.closed_shape = False
+
+
+
 
    def approx_data(self, list, approx):
-      self.angle_change =0
       result = []
       count = 0
 
@@ -170,59 +254,98 @@ class Game:
 
       self.angle_change =0
       result = []
-      count =0
+      count =1
       list_small_angles =[]
+      if len(list) < 2:
+            print('list is one')
+            result = list
+      else: 
 
-      while (count < len(list)):
+         while (count < len(list)):
          
-         if len(list) ==1:
-            result = [list[0]]
-            break 
-
-         else: 
-
-            
-           
             angle = pygame.math.Vector2.angle_to(pygame.Vector2(1,0),list[count-1] )
             angle1 = pygame.math.Vector2.angle_to(pygame.Vector2(1,0),list[count])
-            print(f'first Vect is: {list[count-1] }')
-            print(f'angle is: {angle}')
-            print(f'sec Vect is: {list[count] }')
-            print(f'sec angle is: {angle1}')
+            # print(f'first Vect is: {list[count-1] }')
+            # print(f'angle is: {angle}')
+            # print(f'sec Vect is: {list[count] }')
+            # print(f'sec angle is: {angle1}')
 
-            print(f' angle diff is {abs(angle1-angle)}')
+            # print(f' angle diff is {abs(angle1-angle)}')
 
-               #((count ==len(list)-2) and (len(list)== 0))
-            print(count)
+            #    #((count ==len(list)-2) and (len(list)== 0))
+            # print(count)
+            if (abs(angle1-angle) > 25) and len(list) == 2:
+               print("     PPPPlus 1: start")
+               self.angle_change =  self.angle_change +1  
+               result = list
             
-            if ((abs(angle1-angle) > 25) or (count ==len(list)-1) ): 
-               list_small_angles.append(list[count])
+            #reach the end of the string 
+            elif (count == len(list)-1): 
+                  print("last reached ")
+                  if (abs(angle1-angle) > 25):
+                     print("     PPPPlus 1: end")
+                     self.angle_change =  self.angle_change +1  
+
+                     list_small_angles.append(list[count-1])
+                     tuple_sum =(0,0)
+                     # print(f'biger than 25 list is: {list_small_angles}')  
+                     for i in list_small_angles:
+                     # print(f'is {i}')
+                      tuple_sum = (tuple_sum[0]+i[0], tuple_sum[1]+ i[1])
+                  # print(f'tuple_sum is: {tuple_sum}')  
+
+                     result.append(tuple_sum)
+
+                     result.append(list[count])
+
+                  else:
+
+                     list_small_angles.append(list[count-1])
+                     list_small_angles.append(list[count])
+
+                     tuple_sum =(0,0)
+
+                     # print(f'biger than 25 list is: {list_small_angles}')  
+                     for i in list_small_angles:
+                     # print(f'is {i}')
+                      tuple_sum = (tuple_sum[0]+i[0], tuple_sum[1]+ i[1])
+                   # print(f'tuple_sum is: {tuple_sum}')  
+
+                     result.append(tuple_sum)      
+
+                  list_small_angles =[]
+            
+
+            else: 
+
+             if ((abs(angle1-angle) > 25)  ): 
+                  print("     PPPPlus 1: mid")
+         
+                  self.angle_change =  self.angle_change +1
+                  list_small_angles.append(list[count-1])
+
                 
-               tuple_sum =(0,0)
+                  tuple_sum =(0,0)
 
-               for i in list_small_angles:
-                  print(f'i is {i}')
-                  tuple_sum = (tuple_sum[0]+i[0], tuple_sum[1]+ i[1])
-               print(f'tuple_sum is: {tuple_sum}')  
+                  # print(f'biger than 25 list is: {list_small_angles}')  
+                  for i in list_small_angles:
+                  # print(f'is {i}')
+                     tuple_sum = (tuple_sum[0]+i[0], tuple_sum[1]+ i[1])
+                  # print(f'tuple_sum is: {tuple_sum}')  
 
-               result.append(tuple_sum)
+                  result.append(tuple_sum)
 
                # if ((count ==len(list)-2) and (len(list)== 0))
-               #    print('last one')
-                  
-            
+               #    print('last one'
+                  list_small_angles =[]
+                  print("perdect ")
+             else:
 
-               list_small_angles =[]
-               print("perdect ")
+                  list_small_angles.append(list[count-1])
+               # print(f'list_small_angles add in: {list_small_angles}') 
+                  print("here i am")
 
-
-            else:
-               list[count]
-               list_small_angles.append(list[count])
-               print("here i am")
-            
-
-
+               
             count = count +1 
       return result
 
