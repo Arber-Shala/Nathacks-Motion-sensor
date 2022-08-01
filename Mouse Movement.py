@@ -36,12 +36,14 @@ class Game:
       
       self.surface = surface
       self.bg_color = pygame.Color('black')
-      
       self.FPS = 60
       self.game_Clock = pygame.time.Clock()
       self.button_press = False
       self.close_clicked = False
       self.continue_game = True
+
+
+      self.orgin = (0,0)
       self.rel_list = []
       self.clean_list = []
       self.angle_change = 0
@@ -63,6 +65,7 @@ class Game:
          self.draw()            
          if self.continue_game:
             #self.update()
+            self.draw_shape(self.clean_list)
             self.decide_continue()
          self.game_Clock.tick(self.FPS) # run at most with FPS Frames Per Second 
 
@@ -127,11 +130,12 @@ class Game:
 
             # print('after 3 angle apprx')
             # print(f'angle change after 2  is {self.angle_change}')
+            self.check_closed_shape(self.clean_list,50)
             self.clean_list = self.approx_angle_data(self.clean_list, 25)
             
 
             print('results:')
-            # print(self.clean_list)
+            print(self.clean_list)
 
            
 
@@ -140,25 +144,25 @@ class Game:
             # print(f'angle change after 3  is {self.angle_change}')
             
             self.check_closed_shape(self.clean_list,50)
-            # print(f'shape is close: {self.closed_shape}')
+            print(f'shape is close: {self.closed_shape}')
             if self.closed_shape == True:
                self.update_if_closed(25)
             
-            # print(f'angle change final is {self.angle_change}')
+            print(f'angle change final is {self.angle_change}')
             
             self.check_shape(self.clean_list)
+
+
+
+            #draw the shape
             
 
+         
 
-
-            ###############To do !!!!!!!!!!
-
-            # self.is_triamgle()
-
-           
-            
          if event.type == pygame.MOUSEBUTTONDOWN:
             self.rel_list = []
+            # self.surface.fill(self.bg_color) # clear the display surface first
+            
             self.handle_mousedown(event)
             if (self.button_press == False):
                self.button_press = True
@@ -167,6 +171,18 @@ class Game:
          if event.type == pygame.MOUSEMOTION:  # allows us to move the dot
             if self.button_press == True:
                self.handle_mouse_motion(event)
+
+
+   def draw_shape(self, mylist ):
+      start_pos = self.orgin
+      # print(f'start is {start_pos}')
+
+      for i in mylist:
+         end_pos = (start_pos[0]+ i[0], start_pos[1] +i[1])
+         
+         pygame.draw.line(self.surface, self.default_color,start_pos,end_pos ,5)
+         start_pos = end_pos
+
 
    def check_shape(self, mylist):
       # 1 line : is it a line
@@ -214,7 +230,7 @@ class Game:
          # print (diffi_4)
          #  if abs(math.sin(abs(angle2-angle1))) == 1 and abs(math.sin(abs(angle3-angle2)))==1:
          if  self.angle_change == 4 and self.closed_shape == True:
-            if (diffi_1 == 90 or diffi_1 == 270 ) and (diffi_2 == 90 or diffi_2 == 270 ):
+            if ((diffi_1 >=75 and diffi_1 <=105) or (diffi_1 >= 225 and diffi_1 <= 285) )and ((diffi_2 >=75 and diffi_2 <=105) or (diffi_2 >= 225 and diffi_2 <= 285) ):
                if (round(abs(mylist[0][0])/10)*10 == round(abs(mylist[1][0])/10)*10) and (round(abs(mylist[0][1])/10)*10 == round(abs(mylist[1][1])/10)*10):
                   self.shape ='Square'
                   print(f'we got one: {self.shape}')
@@ -445,6 +461,7 @@ class Game:
       print(event)
       pos = pygame.mouse.get_pos()
       print(pos)
+      self.orgin = pos
       # collidepoint checks if click is inside the dot
       # stops the dot only when inside of the dot is clicked
       if event.button == 1 and self.small_dot.collidepoint(event.pos):  # checks if position of click is inside the dot
@@ -457,6 +474,7 @@ class Game:
       # Dot stops moving when the mouse is clicked and moves again when cloced again
       print(event)
       print('handle_mouseup')
+      
       if event.button == 3:
          if self.small_dot.collidepoint(event.pos):
             self.small_dot.stop()
@@ -482,7 +500,10 @@ class Game:
       
       self.surface.fill(self.bg_color) # clear the display surface first
       self.small_dot.draw()
+      if  self.button_press ==False:
+         self.draw_shape(self.clean_list)
       pygame.display.update() # make the updated surface appear on the display
+
 
    #def update(self):
       ## Update the game objects for the next frame.
